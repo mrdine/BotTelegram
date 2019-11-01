@@ -15,10 +15,12 @@ public class Postgres {
         String url = "jdbc:postgresql://"+"tuffi.db.elephantsql.com"+":5432"+"/fcrrwpsq";
         String username = "fcrrwpsq";
         String password = "7nhXk7OI2taPsBUUd02RvPxGAJjItWjC";
-
+        
+        //iniciar conexão
         try {
             Connection db = DriverManager.getConnection(url, username, password);
             Statement st = db.createStatement();
+            // exemplo de comando de consulta postgresql
             ResultSet rs = st.executeQuery("SELECT * FROM localizacao");
             while (rs.next()) {
                 System.out.print("Column 1 returned ");
