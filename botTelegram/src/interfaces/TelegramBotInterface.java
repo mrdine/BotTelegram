@@ -48,14 +48,18 @@ public class TelegramBotInterface {
 				//atualização do off-set
 				m = update.updateId()+1;
 				
+				// imprime opção para menu toda vez que o usuário termina uma ação no bot ou interage pela primeira vez com o bot
 				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Digite /home para saber as opções de consulta"));
 				System.out.println("Recebendo mensagem:"+ update.message().text());
+				
+				// variável para guardar o comando do menu principal
 				String comando = update.message().text();
 				
+				// variável para comando do menu secundário
 				String conteudo = null;
 				
-				// Imprime menu toda vez que o usuário termina uma ação no bot
+				// imprime menu
 				if (comando.equals("/home")) {
 				
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
@@ -73,9 +77,9 @@ public class TelegramBotInterface {
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
-					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " O que desejas fazer? /addCategoria "
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " O que desejas fazer? \n /addCategoria "
 							+ "\n /listarCategorias "));
-					System.out.println("Mensagem Enviada?" +sendResponse.isOk());
+					System.out.println("Mensagem Enviada?" + sendResponse.isOk());
 					
 					System.out.println("Recebendo mensagem:"+ update.message().text());
 					
@@ -83,19 +87,30 @@ public class TelegramBotInterface {
 					
 					CategoriaSQL categoria = new CategoriaSQL();
 					
+					categoria.setNome(conteudo);
+					categoria.inserir();
+					
 					if (conteudo.equals("/addCategoria")) {
 						
-						categoria.setNome(conteudo);
-						categoria.inserir();
+						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+						System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
+						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Adicione uma descrição à categoria: "));
+						System.out.println("Mensagem Enviada?" +sendResponse.isOk());
 						
+						System.out.println("Recebendo mensagem:"+ update.message().text());
+						
+						String descricao = update.message().text();
+						
+						categoria.setDescricao(descricao);
 						
 					} else if (conteudo.equals("/listarCategorias")) {
 						
-						categoria.listar();
+						// TODO Listar categorias (Como fazer?)
 						
 					}
 					
 				}
+				
 				
 
 				/** 
@@ -112,6 +127,19 @@ public class TelegramBotInterface {
 					System.out.println("Recebendo mensagem:"+ update.message().text());
 					conteudo = update.message().text();
 					
+					CategoriaSQL categoria = new CategoriaSQL();
+					
+					if (conteudo.equals("/addCategoria")) {
+						
+						categoria.setNome(conteudo);
+						categoria.inserir();
+						
+						
+					} else if (conteudo.equals("/listarCategorias")) {
+						
+						categoria.listar();
+						
+					}
 				}
 				
 
