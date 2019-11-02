@@ -13,19 +13,6 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 
-public class Main {
-
-	public static void main(String[] args) {
-				
-		TelegramBotInterface bot = new TelegramBotInterface();
-		
-		bot.init();
-				
-
-	}
-
-}
-
 public class TelegramBotInterface {
 
 	public void init() {
