@@ -1,8 +1,14 @@
 package interfaces;
 
-public interface PostgreSQLCommands {
+import concetion.Postgres;
 
+public interface PostgreSQLCommands {
+	
+	Postgres bdConection = Postgres.getInstance();
+	
 	void inserir();
 	
 	void listar();
+	
+	
 }

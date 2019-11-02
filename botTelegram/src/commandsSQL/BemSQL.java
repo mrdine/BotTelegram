@@ -1,8 +1,10 @@
 package commandsSQL;
 
+import java.sql.SQLException;
+
 import interfaces.PostgreSQLCommands;
 /**
- * Classe que faz as operações dos bens de acordo com as chamadas SQL
+ * Classe que faz as operaï¿½ï¿½es dos bens de acordo com as chamadas SQL
  * 
  * @author Danielvis
  * 
@@ -35,7 +37,7 @@ public class BemSQL implements PostgreSQLCommands {
 	}
 	
 	/**
-	 * Retorna a descrição do bem
+	 * Retorna a descriï¿½ï¿½o do bem
 	 * @return String descricao
 	 */
 	public String getDescricao() {
@@ -43,24 +45,24 @@ public class BemSQL implements PostgreSQLCommands {
 	}
 
 	/**
-	 * Adiciona a descrição do bem
-	 * @param descricao New descrição
+	 * Adiciona a descriï¿½ï¿½o do bem
+	 * @param descricao New descriï¿½ï¿½o
 	 */
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
 
 	/**
-	 * Retorna a localização do bem
-	 * @return int localizaçãoo
+	 * Retorna a localizaï¿½ï¿½o do bem
+	 * @return int localizaï¿½ï¿½oo
 	 */
 	public int getLocalizacao() {
 		return localizacao;
 	}
 	
 	/**
-	 * Adiciona a localização do bem
-	 * @param localizacao New localização
+	 * Adiciona a localizaï¿½ï¿½o do bem
+	 * @param localizacao New localizaï¿½ï¿½o
 	 */
 
 	public void setLocalizacao(int localizacao) {
@@ -89,16 +91,80 @@ public class BemSQL implements PostgreSQLCommands {
 	public void inserir() {
 		
 		String sqlCommand = "INSERT INTO bem(nome,descricao,localizacao,categoria) VALUES('"+nome+"','"+descricao+"',"+localizacao+","+categoria+");";
+		bdConection.executeSQLCommand(sqlCommand);
 		
 	}
 
 	/**
-	 * Lista os bens de acordo com parâmetros passados
+	 * Lista os bens de acordo com parï¿½metros passados
 	 */
 	@Override
 	public void listar() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void listarPorLocalizacao(int localizacao)
+	{
+		String sqlCommand = "SELECT * FROM bem WHERE localizacao =" + localizacao;
+		bdConection.executeSQLCommand(sqlCommand);
+		
+		imprimirBusca();
+	}
+	public void listarPorLocalizacao(String localizacao)
+	{
+		String sqlCommand = "SELECT bem.codigo,bem.nome,bem.descricao,bem.localizacao,bem.categoria FROM bem, localizacao WHERE localizacao.nome ='" + localizacao+"' INTERSECT SELECT bem.codigo,bem.nome,bem.descricao,bem.localizacao,bem.categoria FROM bem";
+		bdConection.executeSQLCommand(sqlCommand);
+		
+		imprimirBusca();
+		
+		
+	}
+	
+	public void buscarPorCodigo(int codigo)
+	{
+		String sqlCommand = "SELECT * FROM bem WHERE codigo =" + codigo;
+		bdConection.executeSQLCommand(sqlCommand);
+		
+		imprimirBusca();
+	}
+	
+	public void buscarPorNome(String nome)
+	{
+		String sqlCommand = "SELECT * FROM bem WHERE nome ='" + nome +"'";
+		bdConection.executeSQLCommand(sqlCommand);
+		
+		imprimirBusca();
+	}
+	
+	public void buscarPorDescricao(String descricao)
+	{
+		String sqlCommand = "SELECT * FROM bem WHERE descricao ='" + descricao + "'";
+		bdConection.executeSQLCommand(sqlCommand);
+		
+		imprimirBusca();
+	}
+	
+	public void movimentarBem(int bemID, int localizacao)
+	{
+		String sqlCommand = "UPDATE bem SET localizacao =" + localizacao +" WHERE codigo =" + bemID +";";
+		bdConection.executeSQLCommand(sqlCommand);
+	}
+	
+	private String imprimirBusca()
+	{
+		String lista = "CÃ³digo  / Nome   / DescriÃ§Ã£o  / LocalizaÃ§Ã£o  / Categoria \n";
+        try {
+			while (bdConection.rs.next()) {
+				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "   " + bdConection.rs.getString(3) + "    " + bdConection.rs.getString(4) + "         " + bdConection.rs.getString(5) + "   \n" ;
+			}
+		System.out.println(lista);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        return lista;
 	}
 
 }
