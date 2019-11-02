@@ -100,7 +100,10 @@ public class BemSQL implements PostgreSQLCommands {
 	 */
 	@Override
 	public void listar() {
-		// TODO Auto-generated method stub
+		String sqlCommand = "SELECT * FROM bem ORDER BY localizacao, categoria, nome";
+		bdConection.executeSQLCommand(sqlCommand);
+		
+		imprimirBusca();
 		
 	}
 	

@@ -19,7 +19,7 @@ public class Main {
 		
 		//localizacao.listar();
 		//categoria.listar();
-		bem.buscarPorNome("cadeira");
+		bem.listar();
 	}
 
 }
