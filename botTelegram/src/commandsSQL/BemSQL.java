@@ -18,6 +18,7 @@ public class BemSQL implements PostgreSQLCommands {
 	private String descricao;
 	private int localizacao;
 	private int categoria;
+	private String lista;
 	
 	/**
 	 * Retorna o nome do bem
@@ -103,18 +104,21 @@ public class BemSQL implements PostgreSQLCommands {
 		String sqlCommand = "SELECT * FROM bem ORDER BY localizacao, categoria, nome";
 		bdConection.executeSQLCommand(sqlCommand);
 		
-		String lista = imprimirBusca();
+		lista = imprimirBusca();
 		
 		return lista;
 	}
 	
-	public void listarPorLocalizacao(int localizacao)
+	public String listarPorLocalizacao(int localizacao)
 	{
 		String sqlCommand = "SELECT * FROM bem WHERE localizacao =" + localizacao;
 		bdConection.executeSQLCommand(sqlCommand);
 		
-		imprimirBusca();
+		lista = imprimirBusca();
+		return lista;
+		
 	}
+	
 	public void listarPorLocalizacao(String localizacao)
 	{
 		String sqlCommand = "SELECT bem.codigo,bem.nome,bem.descricao,bem.localizacao,bem.categoria FROM bem, localizacao WHERE localizacao.nome ='" + localizacao+"' INTERSECT SELECT bem.codigo,bem.nome,bem.descricao,bem.localizacao,bem.categoria FROM bem";
@@ -122,31 +126,37 @@ public class BemSQL implements PostgreSQLCommands {
 		
 		imprimirBusca();
 		
-		
 	}
 	
-	public void buscarPorCodigo(int codigo)
+	public String buscarPorCodigo(int codigo)
 	{
 		String sqlCommand = "SELECT * FROM bem WHERE codigo =" + codigo;
 		bdConection.executeSQLCommand(sqlCommand);
 		
-		imprimirBusca();
+		lista = imprimirBuscaporCodigo();
+		
+		return lista;
 	}
 	
-	public void buscarPorNome(String nome)
+	
+	
+
+	public String buscarPorNome(String nome)
 	{
 		String sqlCommand = "SELECT * FROM bem WHERE nome ='" + nome +"'";
 		bdConection.executeSQLCommand(sqlCommand);
 		
-		imprimirBusca();
+		lista = imprimirBusca();
+		return lista;
 	}
 	
-	public void buscarPorDescricao(String descricao)
+	public String buscarPorDescricao(String descricao)
 	{
 		String sqlCommand = "SELECT * FROM bem WHERE descricao ='" + descricao + "'";
 		bdConection.executeSQLCommand(sqlCommand);
 		
-		imprimirBusca();
+		lista = imprimirBusca();
+		return lista;
 	}
 	
 	public void movimentarBem(int bemID, int localizacao)
@@ -161,6 +171,22 @@ public class BemSQL implements PostgreSQLCommands {
         try {
 			while (bdConection.rs.next()) {
 				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "   " + bdConection.rs.getString(3) + "    " + bdConection.rs.getString(4) + "         " + bdConection.rs.getString(5) + "   \n" ;
+			}
+		System.out.println(lista);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        return lista;
+	}
+	
+	private String imprimirBuscaporCodigo() {
+		
+		String lista = "Código  / Nome   / Localização  \n";
+        try {
+			while (bdConection.rs.next()) {
+				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "   " + bdConection.rs.getString(4) + "   \n" ;
 			}
 		System.out.println(lista);
 		} catch (SQLException e) {

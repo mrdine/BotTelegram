@@ -41,6 +41,9 @@ public class TelegramBotInterface{
 	private String descricao;
 	private int localizacaoBem;
 	private int categoriaBem;
+	private int isTrueBemPorLocalizacao = 0;
+	private int isTrueBemPorCodigo = 0;
+	private int isTrueBemPorDescricao = 0;
 	
 	public void init() {
 		
@@ -136,6 +139,10 @@ public class TelegramBotInterface{
 						+ "\n /addLocalizacaoBem"
 						+ "\n /salvarBem"
 						+ "\n /listarBens"
+						+ "\n /listarBensPorLocalizacao"
+						+ "\n /listarBensPorCodigo"
+						+ "\n /listarBensPorNome"
+						+ "\n /listarBensPorDescricao"
 						+ "\n /ok para confirmar escolhas"
 						+ "\n /home para retornar ao menu"));
 	
@@ -153,22 +160,80 @@ public class TelegramBotInterface{
 					
 					descricao = auxiliar;
 					
-					initBem();
+					if (isTrueBemPorDescricao > 0) {
+						
+						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+						
+						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+								"O bem procurado está listado (ou não) abaixo: \n"
+								+ bem.buscarPorDescricao(auxiliar)));
+						
+						isTrueBemPorDescricao = 0;
+						initBem();
+					}
+					
+				initBem();
 					
 				} else if (auxiliar.contains("+")) {
 					
 					auxiliar = auxiliar.replace("+","");
+					
 					localizacaoBem = Integer.parseInt(auxiliar);
+					
+					if (isTrueBemPorLocalizacao > 0) {
+						
+						System.out.println(localizacaoBem);
+						
+						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+						
+						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+								"Os bens desse local estão listados abaixo: \n"
+								+ bem.listarPorLocalizacao(localizacaoBem)));
+						isTrueBemPorLocalizacao = 0;
+						initBem();
+					}
+					
 							
 					initBem();
 				
+				} else if (auxiliar.contains("*")) {
+					
+					auxiliar = auxiliar.replace("*","");
+					int codigo = Integer.parseInt(auxiliar);
+					
+					if (isTrueBemPorCodigo > 0) {
+						
+						System.out.println(codigo);
+						
+						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+						
+						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+								"O bem procurado está listado (ou não) abaixo: \n"
+								+ bem.buscarPorCodigo(codigo)));
+						
+						isTrueBemPorCodigo = 0;
+						initBem();
+					}
+					
+					initBem();
+				} else if (auxiliar.contains("_")) {
+					
+					auxiliar = auxiliar.replace("_","");
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"O bem procurado está listado (ou não) abaixo: \n"
+							+ bem.buscarPorNome(auxiliar)));
+					initBem();
+					
 				} else if (auxiliar.contains("-")) {
 					
 					auxiliar = auxiliar.replace("-","");
 					categoriaBem = Integer.parseInt(auxiliar);
 							
 					initBem();
-					
+				
 				} else {
 					
 					nome = auxiliar;
@@ -223,8 +288,8 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Adicione uma descrição ao bem: + \n"
-							+ "Adicione um ponto final à sua descrição"));
+							"Adicione uma descrição ao bem: \n"
+							+ "OBS: Digitar '.' ao final de sua descrição"));
 					
 					initBem();
 					
@@ -241,6 +306,45 @@ public class TelegramBotInterface{
 				} else if (comando.equals("/home")) {
 					
 					init();
+				} else if (comando.equals("/listarBensPorLocalizacao")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Você quer listar os bens de qual local? \n"
+							+ "OBS: Digitar '+' ao final do número!"
+							+ localizacao.listar()));
+					isTrueBemPorLocalizacao++;
+					initBem();
+					
+				} else if (comando.equals("/listarBensPorCodigo")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite o código do bem que você quer buscar: \n"
+							+ "OBS: Digitar '*' ao final do número!"
+							));
+					isTrueBemPorCodigo++;
+					initBem();
+					
+				} else if (comando.equals("/listarBensPorNome")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite o nome do bem que você quer buscar: \n"
+							+ "OBS: Digitar '_' ao final do nome!"
+							));
+					initBem();
+					
+				} else if (comando.equals("/listarBensPorDescricao")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite o a descrição do bem que você quer buscar: \n"
+							+ "OBS: Digitar '.' ao final da descrição!"
+							));
+					isTrueBemPorDescricao++;
+					initBem();
+					
 				}
 			}
 		}	
