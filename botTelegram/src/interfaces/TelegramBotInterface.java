@@ -15,7 +15,7 @@ import com.pengrad.telegrambot.response.SendResponse;
 
 import commandsSQL.CategoriaSQL;
 
-public class TelegramBotInterface{
+public class TelegramBotInterface extends CategoriaSQL{
 
 	//controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
 	private int m=0;
@@ -142,6 +142,8 @@ public class TelegramBotInterface{
 					System.out.println("O nome da categoria da vez: " + categoria.getNome());
 					System.out.println("O conteúdo recebido na vez foi esse: " + auxiliar);
 					
+					categoria.inserir();
+					
 					initCategoria();
 					
 				} else {
@@ -150,6 +152,8 @@ public class TelegramBotInterface{
 					
 					System.out.println("O nome da categoria da vez: " + categoria.getNome());
 					System.out.println("O conteúdo recebido na vez foi esse: " + auxiliar);
+					
+					categoria.inserir();
 					
 					initCategoria();
 				}
