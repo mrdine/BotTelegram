@@ -157,7 +157,7 @@ public class BemSQL implements PostgreSQLCommands {
 	
 	private String imprimirBusca()
 	{
-		String lista = "CÃ³digo  / Nome   / DescriÃ§Ã£o  / LocalizaÃ§Ã£o  / Categoria \n";
+		String lista = "Código  / Nome   / Descrição  / Localização  / Categoria \n";
         try {
 			while (bdConection.rs.next()) {
 				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "   " + bdConection.rs.getString(3) + "    " + bdConection.rs.getString(4) + "         " + bdConection.rs.getString(5) + "   \n" ;

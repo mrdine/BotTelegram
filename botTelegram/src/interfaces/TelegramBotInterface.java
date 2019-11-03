@@ -13,6 +13,7 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 
+import commandsSQL.BemSQL;
 import commandsSQL.CategoriaSQL;
 import commandsSQL.LocalizacaoSQL;
 
@@ -34,9 +35,12 @@ public class TelegramBotInterface{
 	
 	private CategoriaSQL categoria;
 	private LocalizacaoSQL localizacao;
+	private BemSQL bem;
 	
 	private String nome;
 	private String descricao;
+	private int localizacaoBem;
+	private int categoriaBem;
 	
 	public void init() {
 		
@@ -90,15 +94,156 @@ public class TelegramBotInterface{
 					
 				} else if (comando.contentEquals("/bem")) {
 					
-					
+					initBem();
 					
 				} else if (comando.contentEquals("/localizacao")) {
 					
 					initLocalizacao();
 				}
+				
 				init();	
 			}
 		}
+	}
+
+	/** 
+	 * faz comandos e chama métodos de bemSQL
+	 */
+	private void initBem() {
+		List<Update> bens;
+		
+		bem = new BemSQL();
+		categoria = new CategoriaSQL();
+		localizacao = new LocalizacaoSQL();
+		
+		while(true) {
+			
+			updatesResponse =  bot.execute(new GetUpdates().limit(1).offset(m));
+			
+			bens = updatesResponse.updates();
+			
+			for (Update update : bens) {
+			
+				m = update.updateId()+1;
+				
+				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+			
+				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+						"Menu categoria: "
+						+ "\n /addBem"
+						+ "\n /addDescricaoBem"
+						+ "\n /addCategoriaBem"
+						+ "\n /addLocalizacaoBem"
+						+ "\n /salvarBem"
+						+ "\n /listarBens"
+						+ "\n /ok para confirmar escolhas"
+						+ "\n /home para retornar ao menu"));
+	
+				System.out.println("Recebendo mensagem: "+ update.message().text());
+				
+				String auxiliar = update.message().text();
+				
+				String comando = null;
+				
+				if (auxiliar.contains("/")){
+					
+					comando =  update.message().text();
+					
+				} else if(auxiliar.contains(".")) {
+					
+					descricao = auxiliar;
+					
+					initBem();
+					
+				} else if (auxiliar.contains("+")) {
+					
+					auxiliar = auxiliar.replace("+","");
+					localizacaoBem = Integer.parseInt(auxiliar);
+							
+					initBem();
+				
+				} else if (auxiliar.contains("-")) {
+					
+					auxiliar = auxiliar.replace("-","");
+					categoriaBem = Integer.parseInt(auxiliar);
+							
+					initBem();
+					
+				} else {
+					
+					nome = auxiliar;
+					
+					initBem();
+				}
+				
+				// Opções de categoria
+				if (comando.equals("/addBem")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							" Adicione um nome ao bem: "));
+					
+					initBem();
+					
+				} else if (comando.equals("/listarBens")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), bem.listar()));
+					
+					initBem();
+				
+				} else if (comando.equals("/addCategoriaBem")) {
+			
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite o código da categoria do bem cadastrado: \n"
+							+ "OBS: Digitar '-' ao final do número!\n"
+							+ categoria.listar()
+							));
+					
+					initBem();
+				
+				} else if (comando.equals("/addLocalizacaoBem")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite o código da localizaçãoo do bem cadastrado: \n"
+							+ "OBS: Digitar '+' ao final do número!" 
+							+ localizacao.listar()
+									));
+					
+					initBem();
+					
+				} else if (comando.equals("/addDescricaoBem")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Adicione uma descrição ao bem: + \n"
+							+ "Adicione um ponto final à sua descrição"));
+					
+					initBem();
+					
+				} else if (comando.equals("/salvarBem")){
+					
+					bem.setNome(nome);
+					bem.setDescricao(descricao);
+					bem.setLocalizacao(localizacaoBem);
+					bem.setCategoria(categoriaBem);
+					bem.inserir();
+					
+					initBem();
+					
+				} else if (comando.equals("/home")) {
+					
+					init();
+				}
+			}
+		}	
 	}
 
 
@@ -108,6 +253,7 @@ public class TelegramBotInterface{
 	private void initLocalizacao() {
 		
 		List<Update> localizacoes;
+		localizacao = new LocalizacaoSQL();
 		
 		while(true) {
 			
@@ -183,7 +329,6 @@ public class TelegramBotInterface{
 					
 				} else if (comando.equals("/salvarLocalizacao")){
 					
-					localizacao = new LocalizacaoSQL();
 					localizacao.setNome(nome);
 					localizacao.setDescricao(descricao);
 					localizacao.inserir();
@@ -205,6 +350,7 @@ public class TelegramBotInterface{
 	private void initCategoria() {
 		
 		List<Update> categorias;
+		categoria = new CategoriaSQL();
 		
 		while(true) {
 			
@@ -280,7 +426,6 @@ public class TelegramBotInterface{
 					
 				} else if (comando.equals("/salvarCategoria")){
 					
-					categoria = new CategoriaSQL();
 					categoria.setNome(nome);
 					categoria.setDescricao(descricao);
 					categoria.inserir();
