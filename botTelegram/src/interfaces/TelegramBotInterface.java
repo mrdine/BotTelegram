@@ -14,6 +14,7 @@ import com.pengrad.telegrambot.response.GetUpdatesResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 
 import commandsSQL.CategoriaSQL;
+import commandsSQL.LocalizacaoSQL;
 
 public class TelegramBotInterface{
 
@@ -32,6 +33,7 @@ public class TelegramBotInterface{
 	private BaseResponse baseResponse;
 	
 	private CategoriaSQL categoria;
+	private LocalizacaoSQL localizacao;
 	
 	private String nome;
 	private String descricao;
@@ -61,8 +63,8 @@ public class TelegramBotInterface{
 				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 				
 				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-						"Digite /home para nova consulta"
-						+ "\nDigite /next para seguir navegando"));
+						"/home para nova consulta"
+						+ "\n /ok para confirmar escolhas"));
 				
 				String comando = update.message().text();
 				System.out.println("Primeiro estou executando esse comando:" + comando);
@@ -89,9 +91,10 @@ public class TelegramBotInterface{
 				} else if (comando.contentEquals("/bem")) {
 					
 					
+					
 				} else if (comando.contentEquals("/localizacao")) {
 					
-					
+					initLocalizacao();
 				}
 				init();	
 			}
@@ -99,6 +102,101 @@ public class TelegramBotInterface{
 	}
 
 
+	/** 
+	 * faz comandos e chama métodos de localizacaoSQL
+	 */
+	private void initLocalizacao() {
+		
+		List<Update> localizacoes;
+		
+		while(true) {
+			
+			updatesResponse =  bot.execute(new GetUpdates().limit(1).offset(m));
+			
+			localizacoes = updatesResponse.updates();
+			
+			for (Update update : localizacoes) {
+			
+				m = update.updateId()+1;
+				
+				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+			
+				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+						"Menu Localização: "
+						+ "\n /addLocalizacao"
+						+ "\n /addDescricaoLocalizacao "
+						+ "\n /salvarLocalizacao"
+						+ "\n /listarLocalizacoes"
+						+ "\n /ok para confirmar escolhas"
+						+ "\n /home para retornar ao menu"));
+	
+				System.out.println("Recebendo mensagem: "+ update.message().text());
+				
+				String auxiliar = update.message().text();
+				
+				String comando = null;
+				
+				if (auxiliar.contains("/")){
+					
+					comando =  update.message().text();
+					
+				} else if(auxiliar.contains(".")) {
+					
+					descricao = auxiliar;
+					
+					initLocalizacao();
+					
+				} else {
+					
+					nome = auxiliar;
+					
+					initLocalizacao();
+				}
+				
+				// Opções de categoria
+				if (comando.equals("/addLocalizacao")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							" Adicione um nome de Localização: "));
+					
+					initLocalizacao();
+					
+				} else if (comando.equals("/listarLocalizacoes")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), localizacao.listar()));
+					
+					initLocalizacao();
+				
+				} else if (comando.equals("/addDescricaoLocalizacao")) {
+			
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Adicione uma descrição à localização: "
+							+ "Adicione um ponto final à sua descrição"));
+					
+					initLocalizacao();
+					
+				} else if (comando.equals("/salvarLocalizacao")){
+					
+					localizacao = new LocalizacaoSQL();
+					localizacao.setNome(nome);
+					localizacao.setDescricao(descricao);
+					localizacao.inserir();
+					
+					initLocalizacao();
+					
+				} else if (comando.equals("/home")) {
+					
+					init();
+				}
+			}
+		}
+	}
 
 	/** 
 	 * faz comandos e chama métodos de categoriaSQL
@@ -106,15 +204,15 @@ public class TelegramBotInterface{
 	
 	private void initCategoria() {
 		
-		List<Update> updates2;
+		List<Update> categorias;
 		
 		while(true) {
 			
 			updatesResponse =  bot.execute(new GetUpdates().limit(1).offset(m));
 			
-			updates2 = updatesResponse.updates();
+			categorias = updatesResponse.updates();
 			
-			for (Update update : updates2) {
+			for (Update update : categorias) {
 			
 				m = update.updateId()+1;
 				
@@ -125,8 +223,8 @@ public class TelegramBotInterface{
 						+ "\n /addCategoria"
 						+ "\n /addDescricaoCategoria "
 						+ "\n /listarCategorias"
-						+ "\n/salvarCategoria"
-						+ "\n /next para seguir navegando"
+						+ "\n /salvarCategoria"
+						+ "\n /ok para confirmar escolhas"
 						+ "\n /home para retornar ao menu"));
 	
 				System.out.println("Recebendo mensagem: "+ update.message().text());
@@ -193,8 +291,6 @@ public class TelegramBotInterface{
 					
 					init();
 				}
-				
-				
 			}
 		}
 	}
