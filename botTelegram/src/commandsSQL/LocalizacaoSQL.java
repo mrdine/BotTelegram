@@ -34,11 +34,13 @@ public class LocalizacaoSQL implements PostgreSQLCommands {
 	}
 
 	@Override
-	public void listar() {
+	public String listar() {
 		String sqlCommand = "SELECT * FROM localizacao";
 		bdConection.executeSQLCommand(sqlCommand);
 		
-		imprimirBusca();
+		String lista = imprimirBusca();
+		
+		return lista;
 	}
 	
 	private String imprimirBusca()

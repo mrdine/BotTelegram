@@ -15,7 +15,7 @@ import com.pengrad.telegrambot.response.SendResponse;
 
 import commandsSQL.CategoriaSQL;
 
-public class TelegramBotInterface extends CategoriaSQL{
+public class TelegramBotInterface{
 
 	//controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
 	private int m=0;
@@ -105,6 +105,10 @@ public class TelegramBotInterface extends CategoriaSQL{
 		
 		CategoriaSQL categoria = new CategoriaSQL();
 		
+		String nome;
+		String descricao;
+		
+		
 		while(true) {
 			
 			updatesResponse =  bot.execute(new GetUpdates().limit(1).offset(m));
@@ -137,30 +141,19 @@ public class TelegramBotInterface extends CategoriaSQL{
 					
 				} else if(auxiliar.contains(".")) {
 					
-					categoria.setDescricao(auxiliar);
-					
-					System.out.println("O nome da categoria da vez: " + categoria.getNome());
-					System.out.println("O conteúdo recebido na vez foi esse: " + auxiliar);
-					
-					categoria.inserir();
+					descricao = auxiliar;
+					categoria.setDescricao(descricao);
 					
 					initCategoria();
 					
 				} else {
 					
+					nome = auxiliar;
 					categoria.setNome(auxiliar);
-					
-					System.out.println("O nome da categoria da vez: " + categoria.getNome());
-					System.out.println("O conteúdo recebido na vez foi esse: " + auxiliar);
-					
-					categoria.inserir();
 					
 					initCategoria();
 				}
 				
-				System.out.println("O nome da categoria da vez: " + categoria.getNome());
-				System.out.println("O conteúdo recebido na vez foi esse: " + auxiliar);
-			
 				// Opções de categoria
 				if (comando.equals("/addCategoria")) {
 					
@@ -172,8 +165,10 @@ public class TelegramBotInterface extends CategoriaSQL{
 					initCategoria();
 					
 				} else if (comando.equals("/listarCategorias")) {
-				
-					categoria.listar();
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), categoria.listar()));
 					
 					initCategoria();
 				
@@ -190,6 +185,8 @@ public class TelegramBotInterface extends CategoriaSQL{
 					
 					init();
 				}
+				
+				
 			}
 		}
 	}

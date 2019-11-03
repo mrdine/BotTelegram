@@ -99,12 +99,13 @@ public class BemSQL implements PostgreSQLCommands {
 	 * Lista os bens de acordo com par�metros passados
 	 */
 	@Override
-	public void listar() {
+	public String listar() {
 		String sqlCommand = "SELECT * FROM bem ORDER BY localizacao, categoria, nome";
 		bdConection.executeSQLCommand(sqlCommand);
 		
-		imprimirBusca();
+		String lista = imprimirBusca();
 		
+		return lista;
 	}
 	
 	public void listarPorLocalizacao(int localizacao)

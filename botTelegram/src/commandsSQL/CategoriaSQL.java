@@ -29,22 +29,26 @@ public class CategoriaSQL implements PostgreSQLCommands {
 		
 	}
 	@Override
-	public void listar() {
+	public String listar() {
 		String sqlCommand = "SELECT * FROM categoria";
 		bdConection.executeSQLCommand(sqlCommand);
 		
-		imprimirBusca();
+		String lista = imprimirBusca();
+		
+		return lista;
 		
 	}
 	
-	private String imprimirBusca()
+	protected String imprimirBusca()
 	{
-		String lista = "CÃ³digo  / Nome   / DescriÃ§Ã£o   \n";
+		String lista = "Código  / Nome   / Descrição   \n";
         try {
+        	
 			while (bdConection.rs.next()) {
 				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "      " + bdConection.rs.getString(3) + "   \n" ;
 				
 			}
+		
 		System.out.println(lista);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

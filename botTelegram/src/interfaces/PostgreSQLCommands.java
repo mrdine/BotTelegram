@@ -8,7 +8,7 @@ public interface PostgreSQLCommands {
 	
 	void inserir();
 	
-	void listar();
+	String listar();
 	
 	
 }
