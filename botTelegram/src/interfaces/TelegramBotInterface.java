@@ -15,23 +15,36 @@ import com.pengrad.telegrambot.response.SendResponse;
 
 import commandsSQL.CategoriaSQL;
 
-public class TelegramBotInterface {
+public class TelegramBotInterface extends CategoriaSQL{
 
-	public void init() {
+	//controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
+	private int m=0;
 	
-		TelegramBot bot = TelegramBotAdapter.build("1028381418:AAE1ixyIWE_mKGe3PA09uE0vE6YWi3waD_4");
+	TelegramBot bot = TelegramBotAdapter.build("1028381418:AAE1ixyIWE_mKGe3PA09uE0vE6YWi3waD_4");
 
-		//objeto responsável por receber as mensagens
-		GetUpdatesResponse updatesResponse;
+	//objeto responsável por receber as mensagens
+	GetUpdatesResponse updatesResponse;
+	
+	//objeto responsável por gerenciar o envio de respostas
+	SendResponse sendResponse;
+	
+	//objeto responsável por gerenciar o envio de ações do chat
+	BaseResponse baseResponse;
+	
+	public void init() {
 		
-		//objeto responsável por gerenciar o envio de respostas
-		SendResponse sendResponse;
+		List<Update> updates;
 		
-		//objeto responsável por gerenciar o envio de ações do chat
-		BaseResponse baseResponse;
+		/*
+		updates = updatesResponse.updates();
 		
-		//controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
-		int m=0;
+		Update up = new Update();
+		
+		updates.add(up);
+		
+		sendResponse = bot.execute(new SendMessage(up.message().toString(), 
+				"Digite /home para saber as opções de consulta"));
+	*/
 		
 		//loop infinito pode ser alterado por algum timer de intervalo curto
 		while (true){
@@ -40,7 +53,9 @@ public class TelegramBotInterface {
 			updatesResponse =  bot.execute(new GetUpdates().limit(100).offset(m));
 			
 			//lista de mensagens
-			List<Update> updates = updatesResponse.updates();
+			updates = updatesResponse.updates();
+			
+			//updates.add(up);
 			
 			//análise de cada ação da mensagem
 			for (Update update : updates) {
@@ -48,121 +63,204 @@ public class TelegramBotInterface {
 				//atualização do off-set
 				m = update.updateId()+1;
 				
-				// imprime opção para menu toda vez que o usuário termina uma ação no bot ou interage pela primeira vez com o bot
+				// imprime opção para /home toda vez que o usuário termina uma ação no bot ou interage pela primeira vez com o bot
 				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Digite /home para saber as opções de consulta"));
-				System.out.println("Recebendo mensagem:"+ update.message().text());
 				
-				// variável para guardar o comando do menu principal
+				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+						"Digite /home para nova consulta"
+						+ "\nDigite /next para seguir navegando"));
+				
 				String comando = update.message().text();
-				
-				// variável para comando do menu secundário
-				String conteudo = null;
+				System.out.println("Primeiro estou executando esse comando:" + comando);
 				
 				// imprime menu
 				if (comando.equals("/home")) {
-				
+					
+					//m = update.updateId()+1;
+					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-					System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
-					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " ----------- MENU ----------- "
-							+ "\n /categoria \n /bem \n /localizacao"));
-					System.out.println("Mensagem Enviada?" +sendResponse.isOk());
+					//System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
+										
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							" Menu Principal: "
+							+ "\n /categoria "
+							+ "\n /bem "
+							+ "\n /localizacao"));
+					
+					System.out.println("Segundo estou executando esse comando:" + update.message().text());
+					
+					
+					//System.out.println("Mensagem Enviada?" +sendResponse.isOk());
+					
+				// Chama funções para fazer os procedimentos
+				} else if (comando.contentEquals("/categoria")) {
+					
+					initCategoria();
+					
+				} else if (comando.contentEquals("/bem")) {
+					
+					
+				} else if (comando.contentEquals("/localizacao")) {
+					
 					
 				}
 				
-				/** 
-				 * faz comandos e chama métodos de categoriaSQL
-				 */
-				if (comando.equals("/categoria")) {
-					
-					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-					System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
-					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " O que desejas fazer? \n /addCategoria "
-							+ "\n /listarCategorias "));
-					System.out.println("Mensagem Enviada?" + sendResponse.isOk());
-					
-					System.out.println("Recebendo mensagem:"+ update.message().text());
-					
-					conteudo = update.message().text();
-					
-					CategoriaSQL categoria = new CategoriaSQL();
-					
-					categoria.setNome(conteudo);
-					categoria.inserir();
-					
-					if (conteudo.equals("/addCategoria")) {
+				m = update.updateId()+1;
+				
+				init();
+				
+				/*
+				
+
+					if (comando.equals("/localizacao")) {
 						
 						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 						System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
-						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Adicione uma descrição à categoria: "));
+						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Digite a nova localização "
+								+ "que desejas adicionar à empresa: "));
 						System.out.println("Mensagem Enviada?" +sendResponse.isOk());
 						
 						System.out.println("Recebendo mensagem:"+ update.message().text());
+						conteudo = update.message().text();
 						
-						String descricao = update.message().text();
+						CategoriaSQL categoria1 = new CategoriaSQL();
 						
-						categoria.setDescricao(descricao);
-						
-					} else if (conteudo.equals("/listarCategorias")) {
-						
-						// TODO Listar categorias (Como fazer?)
-						
+						if (conteudo.equals("/addCategoria")) {
+							
+							categoria1.setNome(conteudo);
+							categoria1.inserir();
+							
+							
+						} else if (conteudo.equals("/listarCategorias")) {
+							
+							categoria1.listar();
+							
+						}
 					}
 					
-				}
-				
-				
-
-				/** 
-				 * faz comandos e chama métodos de localizacaoSQL
-				 */
-				if (comando.equals("/localizacao")) {
+	
 					
-					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-					System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
-					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Digite a nova localização "
-							+ "que desejas adicionar à empresa: "));
-					System.out.println("Mensagem Enviada?" +sendResponse.isOk());
-					
-					System.out.println("Recebendo mensagem:"+ update.message().text());
-					conteudo = update.message().text();
-					
-					CategoriaSQL categoria = new CategoriaSQL();
-					
-					if (conteudo.equals("/addCategoria")) {
+					if (comando.equals("/bem")) {
 						
-						categoria.setNome(conteudo);
-						categoria.inserir();
+						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+						System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
+						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Digite o nome do novo"
+								+ " bem que desejas adicionar à empresa: "));
+						System.out.println("Mensagem Enviada?" +sendResponse.isOk());
 						
-						
-					} else if (conteudo.equals("/listarCategorias")) {
-						
-						categoria.listar();
+						System.out.println("Recebendo mensagem:"+ update.message().text());
+						conteudo = update.message().text();
 						
 					}
-				}
-				
-
-				/** 
-				 * faz comandos e chama métodos de bemSQL
-				 */
-				if (comando.equals("/bem")) {
-					
-					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-					System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
-					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Digite o nome do novo"
-							+ " bem que desejas adicionar à empresa: "));
-					System.out.println("Mensagem Enviada?" +sendResponse.isOk());
-					
-					System.out.println("Recebendo mensagem:"+ update.message().text());
-					conteudo = update.message().text();
-					
-				}
+				*/
 				
 			}
-			
-			
 		}
 	}
 
+
+
+	/** 
+	 * faz comandos e chama métodos de categoriaSQL
+	 */
+	
+	private void initCategoria() {
+		
+		List<Update> updates2;
+		
+		CategoriaSQL categoria = new CategoriaSQL();
+		
+		while(true) {
+			
+			updatesResponse =  bot.execute(new GetUpdates().limit(1).offset(m));
+			
+			updates2 = updatesResponse.updates();
+			
+			for (Update update : updates2) {
+			
+				m = update.updateId()+1;
+				
+				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+				
+				//System.out.println("Resposta de Chat Action Enviada? " + baseResponse.isOk());
+				
+				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+						"Menu categoria: "
+						+ "\n /addCategoria"
+						+ "\n /addDescricaoCategoria "
+						+ "\n /listarCategorias"
+						+ "\n /next para seguir navegando"
+						+ "\n /home para retornar ao menu"));
+				
+				//System.out.println("Mensagem Enviada? " + sendResponse.isOk());	
+				System.out.println("Recebendo mensagem: "+ update.message().text());
+				
+				String auxiliar = update.message().text();
+				
+				String comando = null;
+				
+				if (auxiliar.contains("/")){
+					
+					comando =  update.message().text();
+					
+				} else if(auxiliar.contains(".")) {
+					
+					categoria.setDescricao(auxiliar);
+					
+					System.out.println("O nome da categoria da vez: " + categoria.getNome());
+					System.out.println("O conteúdo recebido na vez foi esse: " + auxiliar);
+					
+					initCategoria();
+					
+				} else {
+					
+					categoria.setNome(auxiliar);
+					
+					System.out.println("O nome da categoria da vez: " + categoria.getNome());
+					System.out.println("O conteúdo recebido na vez foi esse: " + auxiliar);
+					
+					initCategoria();
+				}
+				
+				System.out.println("O nome da categoria da vez: " + categoria.getNome());
+				System.out.println("O conteúdo recebido na vez foi esse: " + auxiliar);
+			
+				// Opções de categoria
+				if (comando.equals("/addCategoria")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					//System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							" Adicione um nome de categoria: "));
+					
+					//System.out.println("Mensagem Enviada?" +sendResponse.isOk());
+					//System.out.println("Recebendo nome da categoria:"+ update.message().text());
+					
+					initCategoria();
+					
+				} else if (comando.equals("/listarCategorias")) {
+				
+					categoria.listar();
+					
+					initCategoria();
+				
+				} else if (comando.equals("/addDescricaoCategoria")) {
+			
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					//System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Adicione uma descrição à categoria: "
+							+ "Adicione um ponto final à sua descrição"));
+					
+					//System.out.println("Mensagem Enviada?" +sendResponse.isOk());
+					
+					initCategoria();
+				} else if (comando.equals("/home")) {
+					
+					init();
+				}
+			}
+		}
+	}
 }
