@@ -137,9 +137,6 @@ public class BemSQL implements PostgreSQLCommands {
 		
 		return lista;
 	}
-	
-	
-	
 
 	public String buscarPorNome(String nome)
 	{

@@ -41,6 +41,7 @@ public class TelegramBotInterface{
 	private String descricao;
 	private int localizacaoBem;
 	private int categoriaBem;
+	private int codigoBem;
 	private int isTrueBemPorLocalizacao = 0;
 	private int isTrueBemPorCodigo = 0;
 	private int isTrueBemPorDescricao = 0;
@@ -85,7 +86,9 @@ public class TelegramBotInterface{
 							" Menu Principal: "
 							+ "\n /categoria "
 							+ "\n /bem "
-							+ "\n /localizacao"));
+							+ "\n /localizacao"
+							+ "\n /gerarRelatorio"
+							));
 					
 					System.out.println("Segundo estou executando esse comando:" + update.message().text());
 					
@@ -102,11 +105,43 @@ public class TelegramBotInterface{
 				} else if (comando.contentEquals("/localizacao")) {
 					
 					initLocalizacao();
+				} else if(comando.contentEquals("/gerarRelatorio")) {
+					
+					gerarRelatorio();
 				}
 				
 				init();	
 			}
 		}
+	}
+
+	private void gerarRelatorio() {
+
+		List<Update> relatorio;
+		bem = new BemSQL();
+		categoria = new CategoriaSQL();
+		localizacao = new LocalizacaoSQL();
+		
+		while(true) {
+			
+			updatesResponse =  bot.execute(new GetUpdates().limit(1).offset(m));
+			
+			relatorio = updatesResponse.updates();
+			
+			for (Update update: relatorio){
+				
+				m = update.updateId()+1;
+				
+				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+				
+				sendResponse = bot.execute(new SendMessage(update.message().chat().id(),
+						"Relatório geral do sistema: \n"
+						+ "Lista de bens cadastrados: "
+						+ bem.listar()));
+			}
+			 
+		}
+		
 	}
 
 	/** 
@@ -143,6 +178,7 @@ public class TelegramBotInterface{
 						+ "\n /listarBensPorCodigo"
 						+ "\n /listarBensPorNome"
 						+ "\n /listarBensPorDescricao"
+						+ "\n /movimentarBem"
 						+ "\n /ok para confirmar escolhas"
 						+ "\n /home para retornar ao menu"));
 	
@@ -155,6 +191,36 @@ public class TelegramBotInterface{
 				if (auxiliar.contains("/")){
 					
 					comando =  update.message().text();
+					
+				} else if(auxiliar.contains("@")) {
+					
+					auxiliar = auxiliar.replace("@","");
+					
+					codigoBem = Integer.parseInt(auxiliar);
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+				
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Para onde você quer mover o bem? \n"
+							+ "OBS: Digitar '%' ao final do novo local!\n"
+							+ localizacao.listar()));
+				initBem();
+				
+				} else if(auxiliar.contains("%")) {
+					
+					auxiliar = auxiliar.replace("%","");
+					
+					int localDepois = Integer.parseInt(auxiliar);
+					
+					bem.movimentarBem(codigoBem, localDepois);
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"O bem já está no novo local: \n"
+							+ bem.buscarPorCodigo(codigoBem)));
+				
+				initBem();
 					
 				} else if(auxiliar.contains(".")) {
 					
@@ -233,7 +299,7 @@ public class TelegramBotInterface{
 					categoriaBem = Integer.parseInt(auxiliar);
 							
 					initBem();
-				
+					
 				} else {
 					
 					nome = auxiliar;
@@ -339,12 +405,22 @@ public class TelegramBotInterface{
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite o a descrição do bem que você quer buscar: \n"
+							"Digite a descrição do bem que você quer buscar: \n"
 							+ "OBS: Digitar '.' ao final da descrição!"
 							));
 					isTrueBemPorDescricao++;
 					initBem();
 					
+				}  else if (comando.equals("/movimentarBem")) {
+					
+					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite o código do bem que você quer mover: \n"
+							+ "OBS: Digitar '@' ao final da descrição!"
+							));
+					isTrueBemPorDescricao++;
+					initBem();
+				
 				}
 			}
 		}	
