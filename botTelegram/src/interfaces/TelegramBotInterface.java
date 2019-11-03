@@ -15,7 +15,7 @@ import com.pengrad.telegrambot.response.SendResponse;
 
 import commandsSQL.CategoriaSQL;
 
-public class TelegramBotInterface extends CategoriaSQL{
+public class TelegramBotInterface{
 
 	//controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
 	private int m=0;
@@ -34,17 +34,6 @@ public class TelegramBotInterface extends CategoriaSQL{
 	public void init() {
 		
 		List<Update> updates;
-		
-		/*
-		updates = updatesResponse.updates();
-		
-		Update up = new Update();
-		
-		updates.add(up);
-		
-		sendResponse = bot.execute(new SendMessage(up.message().toString(), 
-				"Digite /home para saber as opções de consulta"));
-	*/
 		
 		//loop infinito pode ser alterado por algum timer de intervalo curto
 		while (true){
@@ -76,10 +65,7 @@ public class TelegramBotInterface extends CategoriaSQL{
 				// imprime menu
 				if (comando.equals("/home")) {
 					
-					//m = update.updateId()+1;
-					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-					//System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
 										
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
 							" Menu Principal: "
@@ -89,8 +75,6 @@ public class TelegramBotInterface extends CategoriaSQL{
 					
 					System.out.println("Segundo estou executando esse comando:" + update.message().text());
 					
-					
-					//System.out.println("Mensagem Enviada?" +sendResponse.isOk());
 					
 				// Chama funções para fazer os procedimentos
 				} else if (comando.contentEquals("/categoria")) {
@@ -104,56 +88,7 @@ public class TelegramBotInterface extends CategoriaSQL{
 					
 					
 				}
-				
-				m = update.updateId()+1;
-				
-				init();
-				
-				/*
-				
-
-					if (comando.equals("/localizacao")) {
-						
-						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-						System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
-						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Digite a nova localização "
-								+ "que desejas adicionar à empresa: "));
-						System.out.println("Mensagem Enviada?" +sendResponse.isOk());
-						
-						System.out.println("Recebendo mensagem:"+ update.message().text());
-						conteudo = update.message().text();
-						
-						CategoriaSQL categoria1 = new CategoriaSQL();
-						
-						if (conteudo.equals("/addCategoria")) {
-							
-							categoria1.setNome(conteudo);
-							categoria1.inserir();
-							
-							
-						} else if (conteudo.equals("/listarCategorias")) {
-							
-							categoria1.listar();
-							
-						}
-					}
-					
-	
-					
-					if (comando.equals("/bem")) {
-						
-						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-						System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
-						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), " Digite o nome do novo"
-								+ " bem que desejas adicionar à empresa: "));
-						System.out.println("Mensagem Enviada?" +sendResponse.isOk());
-						
-						System.out.println("Recebendo mensagem:"+ update.message().text());
-						conteudo = update.message().text();
-						
-					}
-				*/
-				
+				init();	
 			}
 		}
 	}
@@ -181,9 +116,7 @@ public class TelegramBotInterface extends CategoriaSQL{
 				m = update.updateId()+1;
 				
 				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-				
-				//System.out.println("Resposta de Chat Action Enviada? " + baseResponse.isOk());
-				
+			
 				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
 						"Menu categoria: "
 						+ "\n /addCategoria"
@@ -191,8 +124,7 @@ public class TelegramBotInterface extends CategoriaSQL{
 						+ "\n /listarCategorias"
 						+ "\n /next para seguir navegando"
 						+ "\n /home para retornar ao menu"));
-				
-				//System.out.println("Mensagem Enviada? " + sendResponse.isOk());	
+	
 				System.out.println("Recebendo mensagem: "+ update.message().text());
 				
 				String auxiliar = update.message().text();
@@ -229,12 +161,9 @@ public class TelegramBotInterface extends CategoriaSQL{
 				if (comando.equals("/addCategoria")) {
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-					//System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
+					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
 							" Adicione um nome de categoria: "));
-					
-					//System.out.println("Mensagem Enviada?" +sendResponse.isOk());
-					//System.out.println("Recebendo nome da categoria:"+ update.message().text());
 					
 					initCategoria();
 					
@@ -247,13 +176,10 @@ public class TelegramBotInterface extends CategoriaSQL{
 				} else if (comando.equals("/addDescricaoCategoria")) {
 			
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-					//System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
 							"Adicione uma descrição à categoria: "
 							+ "Adicione um ponto final à sua descrição"));
-					
-					//System.out.println("Mensagem Enviada?" +sendResponse.isOk());
 					
 					initCategoria();
 				} else if (comando.equals("/home")) {
