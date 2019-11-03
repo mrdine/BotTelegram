@@ -20,16 +20,21 @@ public class TelegramBotInterface{
 	//controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
 	private int m=0;
 	
-	TelegramBot bot = TelegramBotAdapter.build("1028381418:AAE1ixyIWE_mKGe3PA09uE0vE6YWi3waD_4");
+	private TelegramBot bot = TelegramBotAdapter.build("1028381418:AAE1ixyIWE_mKGe3PA09uE0vE6YWi3waD_4");
 
 	//objeto responsável por receber as mensagens
-	GetUpdatesResponse updatesResponse;
+	private GetUpdatesResponse updatesResponse;
 	
 	//objeto responsável por gerenciar o envio de respostas
-	SendResponse sendResponse;
+	private SendResponse sendResponse;
 	
 	//objeto responsável por gerenciar o envio de ações do chat
-	BaseResponse baseResponse;
+	private BaseResponse baseResponse;
+	
+	private CategoriaSQL categoria;
+	
+	private String nome;
+	private String descricao;
 	
 	public void init() {
 		
@@ -103,12 +108,6 @@ public class TelegramBotInterface{
 		
 		List<Update> updates2;
 		
-		CategoriaSQL categoria = new CategoriaSQL();
-		
-		String nome;
-		String descricao;
-		
-		
 		while(true) {
 			
 			updatesResponse =  bot.execute(new GetUpdates().limit(1).offset(m));
@@ -126,6 +125,7 @@ public class TelegramBotInterface{
 						+ "\n /addCategoria"
 						+ "\n /addDescricaoCategoria "
 						+ "\n /listarCategorias"
+						+ "\n/salvarCategoria"
 						+ "\n /next para seguir navegando"
 						+ "\n /home para retornar ao menu"));
 	
@@ -142,14 +142,12 @@ public class TelegramBotInterface{
 				} else if(auxiliar.contains(".")) {
 					
 					descricao = auxiliar;
-					categoria.setDescricao(descricao);
 					
 					initCategoria();
 					
 				} else {
 					
 					nome = auxiliar;
-					categoria.setNome(auxiliar);
 					
 					initCategoria();
 				}
@@ -181,6 +179,16 @@ public class TelegramBotInterface{
 							+ "Adicione um ponto final à sua descrição"));
 					
 					initCategoria();
+					
+				} else if (comando.equals("/salvarCategoria")){
+					
+					categoria = new CategoriaSQL();
+					categoria.setNome(nome);
+					categoria.setDescricao(descricao);
+					categoria.inserir();
+					
+					initCategoria();
+					
 				} else if (comando.equals("/home")) {
 					
 					init();
