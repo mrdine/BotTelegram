@@ -4,23 +4,48 @@ import java.sql.SQLException;
 
 import interfaces.PostgreSQLCommands;
 
+/**
+ * Classe que faz as operações SQL das categorias
+ * 
+ * @author Danielvis
+ * 
+ * */
 public class CategoriaSQL implements PostgreSQLCommands {
-
+	
+	/** atributos de uma categoria */
 	private String nome;
 	private String descricao;
 	
+	/**
+	 * Retornar nome da categoria
+	 * @return String nome
+	 * */
 	public String getNome() {
 		return nome;
 	}
+	/**
+	 * Define nome da categoria 
+	 * @param String nome
+	 */
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+	/**
+	 * Retorna descrição da categoria 
+	 * @return String descrição
+	 */
 	public String getDescricao() {
 		return descricao;
 	}
+	
+	/**
+	 * Definedescrição da categoria 
+	 * @param String descrição
+	 */
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
+	
 	
 	@Override
 	public void inserir() {
@@ -38,10 +63,13 @@ public class CategoriaSQL implements PostgreSQLCommands {
 		return lista;
 		
 	}
-	
+	/** 
+	 * Imprime resultado da busca
+	 * @return String lista das categorias buscadas
+	 * */
 	protected String imprimirBusca()
 	{
-		String lista = "C�digo  / Nome   / Descri��o   \n";
+		String lista = "C�digo  / Nome   / Descri��o   \n";
         try {
         	
 			while (bdConection.rs.next()) {

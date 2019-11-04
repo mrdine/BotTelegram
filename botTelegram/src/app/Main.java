@@ -12,7 +12,9 @@ public class Main {
 		
 		TelegramBotInterface bot = new TelegramBotInterface();
 		
+		
 		bot.init();
+		
 		
 		// Instancia da conexão com banco de dados
 		Postgres bdConection = Postgres.getInstance();

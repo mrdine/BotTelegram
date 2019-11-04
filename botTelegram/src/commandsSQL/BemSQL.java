@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import interfaces.PostgreSQLCommands;
 /**
- * Classe que faz as operaï¿½ï¿½es dos bens de acordo com as chamadas SQL
+ * Classe que faz as operaÃ§Ãµes SQL dos bens
  * 
  * @author Danielvis
  * 
@@ -97,7 +97,8 @@ public class BemSQL implements PostgreSQLCommands {
 	}
 
 	/**
-	 * Lista os bens de acordo com parï¿½metros passados
+	 * Gera o relatorio, listando os bens ordenados por localizacao, categoria e nome
+	 * @return String lista de bens ordenados 
 	 */
 	@Override
 	public String listar() {
@@ -109,6 +110,11 @@ public class BemSQL implements PostgreSQLCommands {
 		return lista;
 	}
 	
+	/**
+	 * Lista os bens de uma localizacao
+	 * @param int codigo da localizacao
+	 * @return String lista de bens
+	 */
 	public String listarPorLocalizacao(int localizacao)
 	{
 		String sqlCommand = "SELECT * FROM bem WHERE localizacao =" + localizacao;
@@ -119,6 +125,11 @@ public class BemSQL implements PostgreSQLCommands {
 		
 	}
 	
+	/**
+	 * Lista os bens de uma localizacao
+	 * @param String nome da localizacao
+	 * @return String lista de bens
+	 */
 	public void listarPorLocalizacao(String localizacao)
 	{
 		String sqlCommand = "SELECT bem.codigo,bem.nome,bem.descricao,bem.localizacao,bem.categoria FROM bem, localizacao WHERE localizacao.nome ='" + localizacao+"' INTERSECT SELECT bem.codigo,bem.nome,bem.descricao,bem.localizacao,bem.categoria FROM bem";
@@ -128,6 +139,11 @@ public class BemSQL implements PostgreSQLCommands {
 		
 	}
 	
+	/**
+	 * Buscar um bem especifico
+	 * @param int codigo do bem
+	 * @return String linha com as informaÃ§oes do bem
+	 */
 	public String buscarPorCodigo(int codigo)
 	{
 		String sqlCommand = "SELECT * FROM bem WHERE codigo =" + codigo;
@@ -137,7 +153,12 @@ public class BemSQL implements PostgreSQLCommands {
 		
 		return lista;
 	}
-
+	
+	/**
+	 * Buscar bens pelo nome
+	 * @param String nome do bem
+	 * @return String lista dos bens
+	 */
 	public String buscarPorNome(String nome)
 	{
 		String sqlCommand = "SELECT * FROM bem WHERE nome ='" + nome +"'";
@@ -147,6 +168,11 @@ public class BemSQL implements PostgreSQLCommands {
 		return lista;
 	}
 	
+	/**
+	 * Buscar bens pela descricao
+	 * @param String descricao do bem
+	 * @return String lista dos bens
+	 */
 	public String buscarPorDescricao(String descricao)
 	{
 		String sqlCommand = "SELECT * FROM bem WHERE descricao ='" + descricao + "'";
@@ -156,15 +182,24 @@ public class BemSQL implements PostgreSQLCommands {
 		return lista;
 	}
 	
+	/**
+	 * Movimenta um bem para outra localizacao
+	 * @param int codigo do bem
+	 * @param int codigo da localizacao
+	 */
 	public void movimentarBem(int bemID, int localizacao)
 	{
 		String sqlCommand = "UPDATE bem SET localizacao =" + localizacao +" WHERE codigo =" + bemID +";";
 		bdConection.executeSQLCommand(sqlCommand);
 	}
 	
+	/**
+	 * Imprimir resultados da busca
+	 * @return String lista dos bens
+	 */
 	private String imprimirBusca()
 	{
-		String lista = "Código  / Nome   / Descrição  / Localização  / Categoria \n";
+		String lista = "CÃ³digo  / Nome   / DescriÃ§Ã£o  / LocalizaÃ§Ã£o  / Categoria \n";
         try {
 			while (bdConection.rs.next()) {
 				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "   " + bdConection.rs.getString(3) + "    " + bdConection.rs.getString(4) + "         " + bdConection.rs.getString(5) + "   \n" ;
@@ -178,9 +213,13 @@ public class BemSQL implements PostgreSQLCommands {
         return lista;
 	}
 	
+	/**
+	 * Imprimir resultados da busca
+	 * @return String lista dos bens
+	 */
 	private String imprimirBuscaporCodigo() {
 		
-		String lista = "Código  / Nome   / Localização  \n";
+		String lista = "CÃ³digo  / Nome   / LocalizaÃ§Ã£o  \n";
         try {
 			while (bdConection.rs.next()) {
 				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "   " + bdConection.rs.getString(4) + "   \n" ;

@@ -2,23 +2,39 @@ package concetion;
 
 import java.sql.*;
 
+/**
+ * Classe singleton que faz conexão e requisições ao banco de dados PostgreSQL
+ * 
+ * @author danielvis
+ *
+ */
 public class Postgres {
 	
+	/** instancia unica da classe */
 	private static Postgres instance = new Postgres();
 	
+	/** atributos de identificação do banco de dados */
 	private String url;
 	private String username;
 	private String password;
 	
+	/** atributos responsaveis por requisições */ 
 	private Connection db;
 	private Statement st;
 	public ResultSet rs;
 	
+	/** 
+	 * Retorna instancia unica da classe
+	 * @return istancia Postgres
+	 */
 	public static Postgres getInstance()
 	{
 		return instance;
 	}
 	
+	/**
+	 * Metodo construtor da classe que inicia conexao com o banco de dados
+	 */
 	private Postgres()
 	{
 		try {
@@ -36,24 +52,17 @@ public class Postgres {
         try {
             db = DriverManager.getConnection(url, username, password);
             st = db.createStatement();
-            // exemplo de comando de consulta postgresql
-            /*
-            rs = st.executeQuery("SELECT * FROM localizacao");
-            while (rs.next()) {
-                System.out.print("Column 1 returned ");
-                System.out.println(rs.getString(2));
-                System.out.print("Column 2 returned ");
-                System.out.println(rs.getString(3));
-            }
-            rs.close();
-            st.close();
-            */
+            
             }
         catch (java.sql.SQLException e) {
             System.out.println(e.getMessage());
         }
 	}
 	
+	/**
+	 * Requisita a execução de um comando PostgreSQL
+	 * @param command
+	 */
 	public void executeSQLCommand(String command)
 	{
 		try {

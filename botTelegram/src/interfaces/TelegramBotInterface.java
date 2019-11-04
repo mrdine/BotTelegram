@@ -19,18 +19,18 @@ import commandsSQL.LocalizacaoSQL;
 
 public class TelegramBotInterface{
 
-	//controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
+	//controle de off-set, isto ï¿½, a partir deste ID serï¿½ lido as mensagens pendentes na fila
 	private int m=0;
 	
 	private TelegramBot bot = TelegramBotAdapter.build("1028381418:AAE1ixyIWE_mKGe3PA09uE0vE6YWi3waD_4");
 
-	//objeto responsável por receber as mensagens
+	//objeto responsï¿½vel por receber as mensagens
 	private GetUpdatesResponse updatesResponse;
 	
-	//objeto responsável por gerenciar o envio de respostas
+	//objeto responsï¿½vel por gerenciar o envio de respostas
 	private SendResponse sendResponse;
 	
-	//objeto responsável por gerenciar o envio de ações do chat
+	//objeto responsï¿½vel por gerenciar o envio de aï¿½ï¿½es do chat
 	private BaseResponse baseResponse;
 	
 	private CategoriaSQL categoria;
@@ -50,10 +50,12 @@ public class TelegramBotInterface{
 		
 		List<Update> updates;
 		
-		//loop infinito pode ser alterado por algum timer de intervalo curto
+		/** loop infinito pode ser alterado por algum timer de intervalo curto */
 		while (true){
 			
-			//executa comando no Telegram para obter as mensagens pendentes a partir de um off-set (limite inicial)
+			//System.out.println("Executando");
+			
+			// executa comando no Telegram para obter as mensagens pendentes a partir de um off-set (limite inicial) 
 			updatesResponse =  bot.execute(new GetUpdates().limit(100).offset(m));
 			
 			//lista de mensagens
@@ -61,13 +63,13 @@ public class TelegramBotInterface{
 			
 			//updates.add(up);
 			
-			//análise de cada ação da mensagem
+			//anï¿½lise de cada aï¿½ï¿½o da mensagem
 			for (Update update : updates) {
 				
-				//atualização do off-set
+				//atualizaï¿½ï¿½o do off-set
 				m = update.updateId()+1;
 				
-				// imprime opção para /home toda vez que o usuário termina uma ação no bot ou interage pela primeira vez com o bot
+				// imprime opï¿½ï¿½o para /home toda vez que o usuï¿½rio termina uma aï¿½ï¿½o no bot ou interage pela primeira vez com o bot
 				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 				
 				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
@@ -93,7 +95,7 @@ public class TelegramBotInterface{
 					System.out.println("Segundo estou executando esse comando:" + update.message().text());
 					
 					
-				// Chama funções para fazer os procedimentos
+				// Chama funï¿½ï¿½es para fazer os procedimentos
 				} else if (comando.contentEquals("/categoria")) {
 					
 					initCategoria();
@@ -135,7 +137,7 @@ public class TelegramBotInterface{
 				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 				
 				sendResponse = bot.execute(new SendMessage(update.message().chat().id(),
-						"Relatório geral do sistema: \n"
+						"Relatï¿½rio geral do sistema: \n"
 						+ "Lista de bens cadastrados: "
 						+ bem.listar()));
 			}
@@ -145,7 +147,7 @@ public class TelegramBotInterface{
 	}
 
 	/** 
-	 * faz comandos e chama métodos de bemSQL
+	 * faz comandos e chama mï¿½todos de bemSQL
 	 */
 	private void initBem() {
 		List<Update> bens;
@@ -201,7 +203,7 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 				
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Para onde você quer mover o bem? \n"
+							"Para onde vocï¿½ quer mover o bem? \n"
 							+ "OBS: Digitar '%' ao final do novo local!\n"
 							+ localizacao.listar()));
 				initBem();
@@ -217,7 +219,7 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"O bem já está no novo local: \n"
+							"O bem jï¿½ estï¿½ no novo local: \n"
 							+ bem.buscarPorCodigo(codigoBem)));
 				
 				initBem();
@@ -231,7 +233,7 @@ public class TelegramBotInterface{
 						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 						
 						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-								"O bem procurado está listado (ou não) abaixo: \n"
+								"O bem procurado estï¿½ listado (ou nï¿½o) abaixo: \n"
 								+ bem.buscarPorDescricao(auxiliar)));
 						
 						isTrueBemPorDescricao = 0;
@@ -253,7 +255,7 @@ public class TelegramBotInterface{
 						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 						
 						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-								"Os bens desse local estão listados abaixo: \n"
+								"Os bens desse local estï¿½o listados abaixo: \n"
 								+ bem.listarPorLocalizacao(localizacaoBem)));
 						isTrueBemPorLocalizacao = 0;
 						initBem();
@@ -274,7 +276,7 @@ public class TelegramBotInterface{
 						baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 						
 						sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-								"O bem procurado está listado (ou não) abaixo: \n"
+								"O bem procurado estï¿½ listado (ou nï¿½o) abaixo: \n"
 								+ bem.buscarPorCodigo(codigo)));
 						
 						isTrueBemPorCodigo = 0;
@@ -289,7 +291,7 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"O bem procurado está listado (ou não) abaixo: \n"
+							"O bem procurado estï¿½ listado (ou nï¿½o) abaixo: \n"
 							+ bem.buscarPorNome(auxiliar)));
 					initBem();
 					
@@ -307,7 +309,7 @@ public class TelegramBotInterface{
 					initBem();
 				}
 				
-				// Opções de categoria
+				// Opï¿½ï¿½es de categoria
 				if (comando.equals("/addBem")) {
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
@@ -330,8 +332,8 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite o código da categoria do bem cadastrado: \n"
-							+ "OBS: Digitar '-' ao final do número!\n"
+							"Digite o cï¿½digo da categoria do bem cadastrado: \n"
+							+ "OBS: Digitar '-' ao final do nï¿½mero!\n"
 							+ categoria.listar()
 							));
 					
@@ -342,8 +344,8 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite o código da localizaçãoo do bem cadastrado: \n"
-							+ "OBS: Digitar '+' ao final do número!" 
+							"Digite o cï¿½digo da localizaï¿½ï¿½oo do bem cadastrado: \n"
+							+ "OBS: Digitar '+' ao final do nï¿½mero!" 
 							+ localizacao.listar()
 									));
 					
@@ -354,8 +356,8 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Adicione uma descrição ao bem: \n"
-							+ "OBS: Digitar '.' ao final de sua descrição"));
+							"Adicione uma descriï¿½ï¿½o ao bem: \n"
+							+ "OBS: Digitar '.' ao final de sua descriï¿½ï¿½o"));
 					
 					initBem();
 					
@@ -376,8 +378,8 @@ public class TelegramBotInterface{
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Você quer listar os bens de qual local? \n"
-							+ "OBS: Digitar '+' ao final do número!"
+							"Vocï¿½ quer listar os bens de qual local? \n"
+							+ "OBS: Digitar '+' ao final do nï¿½mero!"
 							+ localizacao.listar()));
 					isTrueBemPorLocalizacao++;
 					initBem();
@@ -386,8 +388,8 @@ public class TelegramBotInterface{
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite o código do bem que você quer buscar: \n"
-							+ "OBS: Digitar '*' ao final do número!"
+							"Digite o cï¿½digo do bem que vocï¿½ quer buscar: \n"
+							+ "OBS: Digitar '*' ao final do nï¿½mero!"
 							));
 					isTrueBemPorCodigo++;
 					initBem();
@@ -396,7 +398,7 @@ public class TelegramBotInterface{
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite o nome do bem que você quer buscar: \n"
+							"Digite o nome do bem que vocï¿½ quer buscar: \n"
 							+ "OBS: Digitar '_' ao final do nome!"
 							));
 					initBem();
@@ -405,8 +407,8 @@ public class TelegramBotInterface{
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite a descrição do bem que você quer buscar: \n"
-							+ "OBS: Digitar '.' ao final da descrição!"
+							"Digite a descriï¿½ï¿½o do bem que vocï¿½ quer buscar: \n"
+							+ "OBS: Digitar '.' ao final da descriï¿½ï¿½o!"
 							));
 					isTrueBemPorDescricao++;
 					initBem();
@@ -415,8 +417,8 @@ public class TelegramBotInterface{
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite o código do bem que você quer mover: \n"
-							+ "OBS: Digitar '@' ao final da descrição!"
+							"Digite o cï¿½digo do bem que vocï¿½ quer mover: \n"
+							+ "OBS: Digitar '@' ao final da descriï¿½ï¿½o!"
 							));
 					isTrueBemPorDescricao++;
 					initBem();
@@ -428,7 +430,7 @@ public class TelegramBotInterface{
 
 
 	/** 
-	 * faz comandos e chama métodos de localizacaoSQL
+	 * faz comandos e chama mï¿½todos de localizacaoSQL
 	 */
 	private void initLocalizacao() {
 		
@@ -448,7 +450,7 @@ public class TelegramBotInterface{
 				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 			
 				sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-						"Menu Localização: "
+						"Menu Localizaï¿½ï¿½o: "
 						+ "\n /addLocalizacao"
 						+ "\n /addDescricaoLocalizacao "
 						+ "\n /salvarLocalizacao"
@@ -479,13 +481,13 @@ public class TelegramBotInterface{
 					initLocalizacao();
 				}
 				
-				// Opções de categoria
+				// Opï¿½ï¿½es de categoria
 				if (comando.equals("/addLocalizacao")) {
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							" Adicione um nome de Localização: "));
+							" Adicione um nome de Localizaï¿½ï¿½o: "));
 					
 					initLocalizacao();
 					
@@ -502,8 +504,8 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Adicione uma descrição à localização: "
-							+ "Adicione um ponto final à sua descrição"));
+							"Adicione uma descriï¿½ï¿½o ï¿½ localizaï¿½ï¿½o: "
+							+ "Adicione um ponto final ï¿½ sua descriï¿½ï¿½o"));
 					
 					initLocalizacao();
 					
@@ -524,7 +526,7 @@ public class TelegramBotInterface{
 	}
 
 	/** 
-	 * faz comandos e chama métodos de categoriaSQL
+	 * faz comandos e chama mï¿½todos de categoriaSQL
 	 */
 	
 	private void initCategoria() {
@@ -576,7 +578,7 @@ public class TelegramBotInterface{
 					initCategoria();
 				}
 				
-				// Opções de categoria
+				// Opï¿½ï¿½es de categoria
 				if (comando.equals("/addCategoria")) {
 					
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
@@ -599,8 +601,8 @@ public class TelegramBotInterface{
 					baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
 					
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(), 
-							"Adicione uma descrição à categoria: "
-							+ "Adicione um ponto final à sua descrição"));
+							"Adicione uma descriï¿½ï¿½o ï¿½ categoria: "
+							+ "Adicione um ponto final ï¿½ sua descriï¿½ï¿½o"));
 					
 					initCategoria();
 					
