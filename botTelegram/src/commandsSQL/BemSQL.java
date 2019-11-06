@@ -14,6 +14,7 @@ public class BemSQL implements PostgreSQLCommands {
 	/**
 	 * Atributos de um bem
 	 * */
+	private int id;
 	private String nome;
 	private String descricao;
 	private int localizacao;
@@ -36,6 +37,26 @@ public class BemSQL implements PostgreSQLCommands {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+	
+	
+	/**
+	 * Retorna o id do bem
+	 * @param void
+	 * @return int id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * Adiciona o id do bem
+	 * @param nome novo id
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	
 	
 	/**
 	 * Retorna a descri��o do bem
@@ -219,10 +240,10 @@ public class BemSQL implements PostgreSQLCommands {
 	 */
 	private String imprimirBuscaporCodigo() {
 		
-		String lista = "Código  / Nome   / Localização  \n";
+		String lista = "Código  / Nome   / Localização   / Categoria    \n";
         try {
 			while (bdConection.rs.next()) {
-				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "   " + bdConection.rs.getString(4) + "   \n" ;
+				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "   " + bdConection.rs.getString(3) + "   "+ bdConection.rs.getString(4) +"   \n" ;
 			}
 		System.out.println(lista);
 		} catch (SQLException e) {

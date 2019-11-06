@@ -70,7 +70,7 @@ public class LocalizacaoSQL implements PostgreSQLCommands {
 	 * */
 	private String imprimirBusca()
 	{
-		String lista = "C�digo  / Nome   / Descri��o   \n";
+		String lista = "Código  / Nome   / Descrição   \n";
         try {
 			while (bdConection.rs.next()) {
 				lista = lista + bdConection.rs.getString(1) + "      " + bdConection.rs.getString(2) + "      " + bdConection.rs.getString(3) + "   \n" ;

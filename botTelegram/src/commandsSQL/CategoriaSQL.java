@@ -69,7 +69,7 @@ public class CategoriaSQL implements PostgreSQLCommands {
 	 * */
 	protected String imprimirBusca()
 	{
-		String lista = "C�digo  / Nome   / Descri��o   \n";
+		String lista = "Código  / Nome   / Descrição   \n";
         try {
         	
 			while (bdConection.rs.next()) {
